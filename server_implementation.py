@@ -1,3 +1,10 @@
 import server
 
-server.run("localhost", 8765, "data.txt")
+
+class ServerImplementaion(server.Server):
+
+    def create_tasks(self):
+        pass
+
+
+ServerImplementaion().run("localhost", 8765, "data.txt")
