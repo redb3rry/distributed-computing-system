@@ -1,7 +1,7 @@
 import asyncio
 import websockets
 import abc
-
+import ast
 
 class Worker(abc.ABC):
     @abc.abstractmethod
@@ -12,8 +12,9 @@ class Worker(abc.ABC):
         self.uri = uri
 
     async def handle_connection(self):
-        async with websockets.connect(self.uri) as websocket:
+        async with websockets.connect(self.uri, max_size=3000000) as websocket:
             task = await websocket.recv()
+            task = ast.literal_eval(task)
             result = self.do_work(task)
             await websocket.send(result)
 
