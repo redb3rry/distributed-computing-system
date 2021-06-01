@@ -12,11 +12,11 @@ class Worker(abc.ABC):
         self.uri = uri
 
     async def handle_connection(self):
-        async with websockets.connect(self.uri, max_size=3000000) as websocket:
+        async with websockets.connect(self.uri, max_size=300000000) as websocket:
             task = await websocket.recv()
             task = ast.literal_eval(task)
             result = self.do_work(task)
-            await websocket.send(result)
+            await websocket.send(str(result))
 
     def run(self):
         asyncio.get_event_loop().run_until_complete(self.handle_connection())

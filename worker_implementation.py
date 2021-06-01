@@ -12,10 +12,10 @@ class WorkerImplementation(Worker):
         result = []
         for index, line in enumerate(a):
             line_result = []
-            for e in line:
+            for i in range(len(b[0])):
                 suma = 0
                 for j, element in enumerate(line):
-                    suma += element * b[j][index]
+                    suma += element * b[j][i]
                 line_result.append(suma)
             result.append(line_result)
         return result
