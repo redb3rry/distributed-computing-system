@@ -3,6 +3,7 @@ import websockets
 import abc
 import ast
 
+
 class Worker(abc.ABC):
     @abc.abstractmethod
     def do_work(self, task):

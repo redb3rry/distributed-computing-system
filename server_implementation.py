@@ -1,8 +1,13 @@
 import server
 import math
+import ast
 
 
 class ServerImplementation(server.Server):
+    divider = 0
+    num_of_workers = 0
+    result_rows = 0
+    result_cols = 0
 
     def read_matrix(self, filename):
         f = open(filename, "r")
@@ -24,9 +29,11 @@ class ServerImplementation(server.Server):
     def create_tasks(self, data, num_of_workers):
         A = data[0]
         B = data[1]
-        result_rows = len(A)
-        result_cols = len(B[0])
-        divider = math.ceil(result_rows / num_of_workers)
+        self.result_rows = len(A)
+        self.result_cols = len(A[0])
+        divider = math.ceil(self.result_rows / num_of_workers)
+        self.divider = divider
+        self.num_of_workers = num_of_workers
         tasks = []
         for i in range(num_of_workers):
             start = i * divider
@@ -42,8 +49,12 @@ class ServerImplementation(server.Server):
         B = self.read_matrix(filename[1])
         return [A, B]
 
-    def add_to_results(self, result, connection_number):
-        pass
+    def add_to_results(self, result, connection_number, results):
+        result_arr = ast.literal_eval(result)
+        if results == []:
+            results = [[0 for i in range(self.result_cols)] for j in range(self.result_rows)]
+        results[connection_number * self.divider:(connection_number + 1) * self.divider] = result_arr
+        return results
 
 
 ServerImplementation().run("localhost", 8765, ["A.txt", "B.txt"])

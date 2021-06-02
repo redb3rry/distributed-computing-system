@@ -3,10 +3,14 @@ import asyncio
 import websockets
 import sys
 
-connectionCounter = 0
-tasks = []
 
 class Server(abc.ABC):
+    connectionCounter = 0
+    finishedCounter = 0
+    num_of_workers = 0
+    tasks = []
+    results = []
+
     @abc.abstractmethod
     def create_tasks(self, data, num_of_workers):
         pass
@@ -16,22 +20,24 @@ class Server(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def add_to_results(self, result, connection_number):
+    def add_to_results(self, result, connection_number, results):
         pass
 
     async def handle_connection(self, websocket, path):
-        global connectionCounter
-        await websocket.send(str(tasks[connectionCounter]))
+        my_count = self.connectionCounter
+        self.connectionCounter += 1
+        await websocket.send(str(self.tasks[my_count]))
         result = await websocket.recv()
-        self.add_to_results(result, connectionCounter)
-        connectionCounter += 1
+        self.results = self.add_to_results(result, my_count, self.results)
+        self.finishedCounter += 1
+        print("Worker #" + str(my_count) + " has finished working")
+        if self.finishedCounter == self.num_of_workers:
+            print(self.results)
 
     def run(self, address, port, filename):
-        global tasks
-
-        num_of_workers = int(sys.argv[1])
+        self.num_of_workers = int(sys.argv[1])
         data = self.read_data(filename)
-        tasks = self.create_tasks(data, num_of_workers)
+        self.tasks = self.create_tasks(data, self.num_of_workers)
 
         start_server = websockets.serve(self.handle_connection, address, port)
 
