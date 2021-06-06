@@ -1,16 +1,14 @@
-import asyncio
-import websockets
-import abc
 import ast
+import asyncio
+
+import websockets
 
 
-class Worker(abc.ABC):
-    @abc.abstractmethod
-    def do_work(self, task):
-        return 0
+class Worker:
 
-    def __init__(self, uri):
+    def __init__(self, uri, do_work):
         self.uri = uri
+        self.do_work = do_work
 
     async def handle_connection(self):
         async with websockets.connect(self.uri, max_size=300000000) as websocket:
