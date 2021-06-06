@@ -26,6 +26,7 @@ class Server:
         print("Worker #" + str(my_count) + " has finished working")
         if self.finishedCounter == self.num_of_workers:
             print(self.results)
+            asyncio.get_event_loop().stop()
 
     def run(self, address, port, filename):
         if len(sys.argv) < 2:
