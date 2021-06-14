@@ -10,6 +10,7 @@ class Server:
     num_of_workers = 0
     tasks = []
     results = []
+    data = []
 
     def __init__(self, create_tasks, read_data, add_to_results):
         self.create_tasks = create_tasks
@@ -25,19 +26,15 @@ class Server:
         self.finishedCounter += 1
         print("Worker #" + str(my_count) + " has finished working")
         if self.finishedCounter == self.num_of_workers:
-            print(self.results)
+            print("Work finished, stopping...")
             asyncio.get_event_loop().stop()
 
     def run(self, address, port, filename):
         if len(sys.argv) < 2:
             exit("You need to pass number of workers as an argument.")
         self.num_of_workers = int(sys.argv[1])
-        data = self.read_data(filename)
-        result_rows = len(data[0])
-        result_cols = len(data[0][0])
-        if not self.results:
-            self.results = [[0 for i in range(result_cols)] for j in range(result_rows)]
-        self.tasks = self.create_tasks(data, self.num_of_workers)
+        self.data = self.read_data(filename)
+        self.tasks = self.create_tasks(self.data, self.num_of_workers)
 
         start_server = websockets.serve(self.handle_connection, address, port)
 

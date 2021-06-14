@@ -50,7 +50,13 @@ def read_data(filename):
 
 def add_to_results(result, connection_number, results, num_of_workers):
     result_arr = ast.literal_eval(result)
-    divider = math.ceil(len(result) / num_of_workers)
+    if not results:
+        data = read_data(["A.txt", "B.txt"])
+        A = data[0]
+        result_rows = len(A)
+        result_cols = len(A[0])
+        results = [[0 for i in range(result_cols)] for j in range(result_rows)]
+    divider = math.ceil(len(results) / num_of_workers)
     results[connection_number * divider:(connection_number + 1) * divider] = result_arr
     return results
 
